@@ -14,14 +14,19 @@ const { Pool } = pkg;
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+import cors from "cors";
+
 app.use(cors({
   origin: [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "https://hackathon-mate.vercel.app"
   ],
-  credentials: true
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type"]
 }));
+app.options("*", cors());
 
 app.use(express.json());
 app.use(cookieParser());
