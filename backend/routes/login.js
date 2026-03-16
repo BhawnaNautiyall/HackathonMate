@@ -6,7 +6,8 @@ export default function authRoutes(pool) {
 
   const cookieOptions = {
     httpOnly: true,
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production", 
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/"
   };
 
@@ -22,6 +23,8 @@ export default function authRoutes(pool) {
         VALUES ($1,$2,$3,$4,$5,$6)`,
         [name, email, phone, year, branch, password]
       );
+
+      console.log("User registered:", email);
 
       res.json({ success: true });
 

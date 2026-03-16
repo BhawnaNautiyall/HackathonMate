@@ -15,7 +15,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: "http://localhost:5500",
+  origin: [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "https://hackathonmate.vercel.app"
+  ],
   credentials: true
 }));
 
@@ -24,7 +28,9 @@ app.use(cookieParser());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 app.use(authRoutes(pool));
