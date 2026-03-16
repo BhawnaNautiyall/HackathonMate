@@ -18,7 +18,7 @@ app.use(cors({
   origin: [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
-    "https://hackathonmate.vercel.app"
+    "https://hackathon-mate.vercel.app"
   ],
   credentials: true
 }));
