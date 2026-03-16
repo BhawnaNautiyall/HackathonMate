@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HackMate Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <header class="flex justify-between items-center px-8 py-4 bg-white shadow">
+
+        <h1 class="text-xl font-bold text-blue-600">
+            HackMate
+        </h1>
+
+        <nav class="space-x-6">
+
+            <button onclick="goHome()" class="text-gray-700 hover:text-blue-600 font-medium">
+                Home
+            </button>
+
+            <button onclick="openPosts()" class="text-gray-700 hover:text-blue-600 font-medium">
+                Posts
+            </button>
+
+            <button onclick="logout()" class="text-red-500">
+                Logout
+            </button>
+
+        </nav>
+
+    </header>
+
+    <div class="flex flex-col items-center justify-center mt-32">
+
+        <h2 class="text-4xl font-bold text-gray-800">
+            Welcome to HackMate 🚀
+        </h2>
+
+        <p class="text-gray-600 mt-4 text-lg">
+            Find teammates for your next hackathon
+        </p>
+
+        <button onclick="openPosts()" class="mt-8 bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600">
+            Explore Posts
+        </button>
+
+    </div>
+
+    <script>
+
+        const API = "http://localhost:3000"
+
+        function openPosts() {
+            window.location.href = "posts.html"
+        }
+
+        function goHome() {
+            window.location.href = "home.html"
+        }
+
+        async function logout() {
+
+            await fetch(`${API}/logout`, {
+                method: "POST",
+                credentials: "include"
+            })
+
+            localStorage.setItem("logout", Date.now())
+
+            window.location.href = "login.html"
+        }
+
+        window.addEventListener("storage", (e) => {
+            if (e.key === "logout") {
+                window.location.href = "login.html"
+            }
+        })
+
+        async function checkAuth() {
+
+            const res = await fetch(`${API}/check-auth`, {
+                credentials: "include"
+            })
+
+            const data = await res.json()
+
+            if (!data.loggedIn) {
+                window.location.href = "login.html"
+            }
+
+        }
+
+        checkAuth()
+
+    </script>
+
+</body>
+
+</html>

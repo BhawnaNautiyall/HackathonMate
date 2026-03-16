@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Posts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <header class="flex justify-between items-center p-4 bg-white shadow">
+
+        <h1 class="text-xl font-bold">HackMate</h1>
+
+        <div class="space-x-6">
+            <a href="home.html">Home</a>
+            <a href="posts.html">Posts</a>
+            <button onclick="logout()" class="text-red-500">Logout</button>
+        </div>
+
+    </header>
+
+    <div class="p-6">
+
+        <button onclick="toggleForm()" class="bg-blue-500 text-white px-4 py-2 rounded mb-6">
+            Add Post
+        </button>
+
+        <div id="postForm" class="hidden bg-white p-4 rounded shadow mb-6">
+
+            <input id="name" placeholder="Name" class="border p-2 w-full mb-2">
+            <input id="hackathon_name" placeholder="Hackathon Name" class="border p-2 w-full mb-2">
+            <input id="user_tech_stack" placeholder="Your Tech Stack" class="border p-2 w-full mb-2">
+            <input id="required_tech_stack" placeholder="Required Tech Stack" class="border p-2 w-full mb-2">
+            <input id="email" placeholder="Email" class="border p-2 w-full mb-2">
+            <input id="phone" placeholder="Phone" class="border p-2 w-full mb-2">
+            <input id="branch" placeholder="Branch" class="border p-2 w-full mb-2">
+            <input id="year" placeholder="Year" class="border p-2 w-full mb-2">
+
+            <button onclick="createPost()" class="bg-green-500 text-white px-4 py-2 rounded">
+                Submit
+            </button>
+
+        </div>
+
+        <div id="postsContainer" class="grid grid-cols-3 gap-6"></div>
+
+    </div>
+
+    <script>
+
+        const API = "http://localhost:3000"
+
+        function toggleForm() {
+            document.getElementById("postForm").classList.toggle("hidden")
+        }
+
+        async function logout() {
+
+            await fetch(`${API}/logout`, {
+                method: "POST",
+                credentials: "include"
+            })
+
+            localStorage.setItem("logout", Date.now())
+            window.location.href = "login.html"
+        }
+
+        async function checkAuth() {
+
+            const res = await fetch(`${API}/check-auth`, {
+                credentials: "include"
+            })
+
+            const data = await res.json()
+
+            if (!data.loggedIn) {
+                window.location.href = "login.html"
+            }
+
+        }
+
+        async function loadPosts() {
+
+            const res = await fetch(`${API}/posts`)
+            const posts = await res.json()
+
+            const container = document.getElementById("postsContainer")
+            container.innerHTML = ""
+
+            posts.forEach(post => {
+
+                const card = `
+<div class="bg-white p-4 rounded shadow flex flex-col">
+
+<h2 class="font-bold text-lg">${post.hackathon_name}</h2>
+
+<p class="text-sm text-gray-600">By ${post.name}</p>
+
+<p class="mt-2"><b>Tech:</b> ${post.user_tech_stack}</p>
+
+<p><b>Looking for:</b> ${post.required_tech_stack}</p>
+
+<p class="text-sm mt-2">${post.branch} - Year ${post.year}</p>
+
+</div>
+`
+
+                container.innerHTML += card
+
+            })
+
+        }
+
+        async function createPost() {
+
+            const post = {
+                name: document.getElementById("name").value,
+                hackathon_name: document.getElementById("hackathon_name").value,
+                user_tech_stack: document.getElementById("user_tech_stack").value,
+                required_tech_stack: document.getElementById("required_tech_stack").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                branch: document.getElementById("branch").value,
+                year: document.getElementById("year").value
+            }
+
+            await fetch(`${API}/posts`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(post)
+            })
+
+            loadPosts()
+
+        }
+
+        checkAuth()
+        loadPosts()
+
+    </script>
+
+</body>
+
+</html>
